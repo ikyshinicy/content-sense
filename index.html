@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Content Sense</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <header class="header">
+    <div>
+      <div class="logo">Content <span>Sense</span></div>
+      <div class="tag">Pahami sebelum percaya.</div>
+    </div>
+    <nav class="nav">
+      <b>Beranda</b>
+      <span>Tentang</span>
+      <span>Panduan</span>
+      <span>Belajar</span>
+    </nav>
+    <div>Iky Shinicy&nbsp;&nbsp;⌄</div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>Content <span>Sense</span></h1>
+      <p>Analisis konten. Perluas perspektif. Latih nalar.<br>
+         Cek fakta, deteksi framing, pahami konteks, dan belajar berpikir kritis.</p>
+      <div class="badges">
+        <div class="badge">✓ Fakta</div>
+        <div class="badge">◈ Konteks</div>
+        <div class="badge">💡 Nalar</div>
+      </div>
+    </section>
+
+    <section class="grid">
+
+      <!-- Analisis Video -->
+      <article class="card video">
+        <div class="icon">▶</div>
+        <h2>Analisis Video</h2>
+        <p>Unggah video untuk menganalisis narasi, framing, provokasi, konteks, dan klaim.</p>
+
+        <div class="drop" id="video-drop">
+          <div>
+            <strong>☁ Klik atau seret video ke sini</strong>
+            MP4, MOV, WEBM · Maks. 500 MB
+          </div>
+        </div>
+        <input type="file" id="video-input" accept="video/*">
+
+        <button class="red" id="video-analyze-btn">Analisis Video</button>
+        <div class="result" id="video-result"></div>
+      </article>
+
+      <!-- Analisis Foto -->
+      <article class="card photo">
+        <div class="icon">▧</div>
+        <h2>Analisis Foto</h2>
+        <p>Unggah gambar untuk mengecek konteks, manipulasi visual, dan klaim yang menyertainya.</p>
+
+        <div class="drop" id="photo-drop">
+          <div>
+            <strong>☁ Klik atau seret gambar ke sini</strong>
+            JPG, PNG, WEBP · Maks. 20 MB
+          </div>
+        </div>
+        <input type="file" id="photo-input" accept="image/*">
+
+        <button class="blue" id="photo-analyze-btn">Analisis Foto</button>
+        <div class="result" id="photo-result"></div>
+      </article>
+
+      <!-- Analisis Teks -->
+      <article class="card text">
+        <div class="icon">▤</div>
+        <h2>Analisis Teks</h2>
+        <p>Tempel teks, link, atau transkrip untuk menganalisis fakta, bias, framing, dan logika.</p>
+
+        <textarea id="text-input" placeholder="Tempel teks di sini..."></textarea>
+
+        <button class="green" id="text-analyze-btn">Analisis Teks</button>
+        <div class="result" id="text-result"></div>
+      </article>
+
+    </section>
+
+    <section class="info">
+      <div>🔎 <b>Cek Fakta</b><span>Bandingkan klaim dengan sumber terpercaya.</span></div>
+      <div>◫ <b>Deteksi Framing</b><span>Temukan sudut pandang dan konteks yang hilang.</span></div>
+      <div>🧠 <b>Analisis Logika</b><span>Kenali pola pikir, bias, dan logical fallacy.</span></div>
+      <div>📖 <b>Belajar</b><span>Latihan literasi media dan berpikir kritis.</span></div>
+    </section>
+  </main>
+
+  <footer>Content Sense — Jangan langsung percaya. Analisis dulu.</footer>
+
+  <script src="js/main.js"></script>
+  <script src="js/analyze-video.js"></script>
+  <script src="js/analyze-photo.js"></script>
+  <script src="js/analyze-text.js"></script>
+</body>
+</html>

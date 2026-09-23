@@ -1,0 +1,305 @@
+/* Content Sense — main stylesheet */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: #f5f7ff;
+  color: #111a36;
+}
+
+/* Header */
+.header {
+  height: 72px;
+  background: #fff;
+  border-bottom: 1px solid #e7eaf3;
+  display: flex;
+  align-items: center;
+  padding: 0 34px;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 25px;
+  font-weight: 800;
+}
+
+.logo span {
+  color: #1769ff;
+}
+
+.tag {
+  font-size: 12px;
+  color: #66708a;
+}
+
+.nav {
+  display: flex;
+  gap: 28px;
+  font-size: 14px;
+  color: #47516d;
+}
+
+.nav b {
+  color: #1769ff;
+}
+
+/* Layout */
+.wrap {
+  max-width: 1250px;
+  margin: auto;
+  padding: 42px 28px;
+}
+
+.hero {
+  text-align: center;
+  padding: 20px 10px 36px;
+}
+
+.hero h1 {
+  font-size: 54px;
+  margin: 0;
+  font-weight: 850;
+  letter-spacing: -2px;
+}
+
+.hero h1 span {
+  color: #1769ff;
+}
+
+.hero p {
+  font-size: 18px;
+  color: #65708c;
+  margin: 12px auto;
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+.badges {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.badge {
+  padding: 9px 15px;
+  border-radius: 30px;
+  background: #fff;
+  border: 1px solid #e2e7f3;
+  font-size: 13px;
+}
+
+/* Cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #e3e7f1;
+  border-radius: 24px;
+  padding: 25px;
+  box-shadow: 0 12px 35px #1725540b;
+}
+
+.icon {
+  width: 58px;
+  height: 58px;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 20px;
+}
+
+.video .icon {
+  background: #ffe8ef;
+}
+
+.photo .icon {
+  background: #e7f0ff;
+}
+
+.text .icon {
+  background: #e6faef;
+}
+
+.card h2 {
+  margin: 0 0 9px;
+  font-size: 23px;
+}
+
+.card p {
+  color: #68738d;
+  font-size: 14px;
+  line-height: 1.55;
+  min-height: 66px;
+}
+
+/* Upload zone */
+.drop {
+  height: 145px;
+  border: 1.5px dashed #cbd3e5;
+  border-radius: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #66708a;
+  font-size: 14px;
+  margin: 18px 0;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.drop.dragover {
+  border-color: #1769ff;
+  background: #f0f5ff;
+}
+
+.drop strong {
+  display: block;
+  color: #26304a;
+  margin-bottom: 5px;
+}
+
+.drop input[type="file"] {
+  display: none;
+}
+
+.drop .filename {
+  color: #1769ff;
+  font-weight: 700;
+}
+
+/* Buttons */
+button {
+  width: 100%;
+  border: 0;
+  border-radius: 14px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.red {
+  background: #ff3b68;
+  color: #fff;
+}
+
+.blue {
+  background: #1769ff;
+  color: #fff;
+}
+
+.green {
+  background: #18a963;
+  color: #fff;
+}
+
+textarea {
+  width: 100%;
+  height: 145px;
+  border: 1.5px solid #dce2ee;
+  border-radius: 17px;
+  padding: 16px;
+  resize: none;
+  font: 14px Inter, Arial;
+  color: #27314c;
+  margin: 18px 0;
+}
+
+/* Result panel (shown after "analysis") */
+.result {
+  margin-top: 16px;
+  border-radius: 14px;
+  padding: 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  background: #f7f9ff;
+  border: 1px solid #e2e7f3;
+  display: none;
+}
+
+.result.show {
+  display: block;
+}
+
+.result b {
+  display: block;
+  margin-bottom: 6px;
+  color: #1769ff;
+}
+
+.result .badge-placeholder {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  background: #fff3e0;
+  color: #b5720a;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* Info section */
+.info {
+  margin-top: 24px;
+  background: #fff;
+  border: 1px solid #e3e7f1;
+  border-radius: 22px;
+  padding: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 15px;
+}
+
+.info div {
+  padding: 12px;
+}
+
+.info b {
+  display: block;
+  margin: 6px 0;
+}
+
+.info span {
+  font-size: 13px;
+  color: #707a92;
+}
+
+footer {
+  text-align: center;
+  color: #8992a8;
+  font-size: 13px;
+  padding: 30px;
+}
+
+@media (max-width: 850px) {
+  .grid,
+  .info {
+    grid-template-columns: 1fr;
+  }
+  .nav {
+    display: none;
+  }
+  .hero h1 {
+    font-size: 40px;
+  }
+  .header {
+    padding: 0 18px;
+  }
+}
