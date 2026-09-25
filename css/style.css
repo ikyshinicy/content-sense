@@ -29,14 +29,8 @@ svg {
 
 .logo {
   display: block;
-  height: 26px;
+  height: 40px;
   width: auto;
-}
-
-.tag {
-  font-size: 12px;
-  color: #66708a;
-  margin-top: 4px;
 }
 
 .nav {
