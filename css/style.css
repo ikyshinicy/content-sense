@@ -45,11 +45,20 @@ svg {
   display: flex;
   gap: 28px;
   font-size: 14px;
-  color: #47516d;
 }
 
-.nav b {
+.nav a {
+  color: #47516d;
+  text-decoration: none;
+}
+
+.nav a:hover {
   color: #1769ff;
+}
+
+.nav a.active {
+  color: #1769ff;
+  font-weight: 700;
 }
 
 .user-chip {
@@ -384,6 +393,99 @@ input[type="text"]:disabled {
 .info span {
   font-size: 13px;
   color: #707a92;
+}
+
+/* Content pages (Panduan, Tentang) */
+.page-hero {
+  text-align: center;
+  padding: 20px 10px 30px;
+}
+
+.page-hero h1 {
+  font-size: 38px;
+  margin: 0;
+  font-weight: 850;
+  letter-spacing: -1px;
+}
+
+.page-hero p {
+  font-size: 16px;
+  color: #65708c;
+  margin: 10px auto 0;
+  max-width: 620px;
+  line-height: 1.5;
+}
+
+.content-block {
+  background: #fff;
+  border: 1px solid #e3e7f1;
+  border-radius: 24px;
+  padding: 36px;
+  box-shadow: 0 12px 35px #1725540b;
+  max-width: 820px;
+  margin: 0 auto;
+}
+
+.content-block h2 {
+  font-size: 20px;
+  margin: 0 0 10px;
+}
+
+.content-block > h2:not(:first-child),
+.content-block > .steps:not(:first-child) {
+  margin-top: 30px;
+}
+
+.content-block p {
+  color: #47516d;
+  font-size: 14.5px;
+  line-height: 1.7;
+  margin: 0 0 12px;
+}
+
+.steps {
+  list-style: none;
+  counter-reset: step;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.steps li {
+  counter-increment: step;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.steps li::before {
+  content: counter(step);
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #eaf0ff;
+  color: #1769ff;
+  font-weight: 700;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.steps li div b {
+  display: block;
+  font-size: 14.5px;
+  color: #111a36;
+  margin-bottom: 3px;
+}
+
+.steps li div span {
+  font-size: 13.5px;
+  color: #68738d;
+  line-height: 1.6;
 }
 
 footer {

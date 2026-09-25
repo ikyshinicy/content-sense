@@ -9,7 +9,10 @@ Static site — HTML/CSS/JS polos, tanpa build tool.
 
 ```
 content-sense/
-├── index.html              # Halaman utama (1 page, 2 kolom: input | output)
+├── index.html              # Halaman utama / Beranda (tool: 2 kolom input | output)
+├── pages/
+│   ├── panduan.html          # Halaman Panduan — cara pakai tool
+│   └── tentang.html          # Halaman Tentang — cerita kenapa tool ini dibuat
 ├── css/
 │   └── style.css           # Semua styling
 ├── js/
