@@ -64,8 +64,8 @@ svg {
 
 /* Layout */
 .wrap {
-  max-width: none;
-  margin: 0;
+  max-width: 1400px;
+  margin: 0 auto;
   padding: 42px 40px;
 }
 
@@ -74,7 +74,7 @@ svg {
   border-radius: 28px;
   margin: 0 0 24px;
   overflow: hidden;
-  aspect-ratio: 21 / 5;
+  aspect-ratio: 21 / 4;
   background: rgba(255, 255, 255, 0.04);
 }
 
