@@ -164,47 +164,7 @@ svg {
   position: relative;
   border-radius: 20px;
   min-height: 260px;
-  display: flex;
-  overflow: hidden;
   background: rgba(255, 255, 255, 0.04);
-}
-
-.banner-asset img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 20px;
-}
-
-.banner-asset-placeholder {
-  display: none;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  gap: 8px;
-  width: 100%;
-  padding: 28px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.28);
-  border-radius: 20px;
-  color: #b9c4ea;
-}
-
-.banner-asset-placeholder strong {
-  color: #fff;
-  font-size: 14.5px;
-}
-
-.banner-asset-placeholder span {
-  font-size: 12.5px;
-  line-height: 1.5;
-  max-width: 280px;
-}
-
-.banner-asset-placeholder code {
-  background: rgba(255, 255, 255, 0.12);
-  padding: 1px 5px;
-  border-radius: 4px;
 }
 
 /* Tool: two-column layout */

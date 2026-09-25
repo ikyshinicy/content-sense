@@ -113,19 +113,6 @@ function resetOutputPanel() {
 window.ContentSense = { simulateProcessing, renderAnalysisResult, resetOutputPanel };
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Banner: kalau assets/banner.png belum ada (404), tampilkan placeholder.
-  const bannerImg = document.getElementById('banner-asset-img');
-  const bannerPlaceholder = document.getElementById('banner-asset-placeholder');
-  if (bannerImg && bannerPlaceholder) {
-    bannerImg.addEventListener('error', () => {
-      bannerImg.style.display = 'none';
-      bannerPlaceholder.style.display = 'flex';
-    });
-    bannerImg.addEventListener('load', () => {
-      bannerPlaceholder.style.display = 'none';
-    });
-  }
-
   // Counter karakter untuk textarea teks.
   const textInput = document.getElementById('text-input');
   const charCount = document.getElementById('char-count');
