@@ -1,252 +1,487 @@
-// Content Sense — Supabase Edge Function: analyze-url
-// Alur: terima link berita -> fetch HTML-nya (dengan validasi SSRF &
-// batas ukuran) -> ekstrak isi artikel bersih pakai linkedom + Readability
-// (self-hosted, bukan reader service pihak ketiga — konsisten dengan
-// alasan project ini pindah dari Google API langsung ke Replicate: hindari
-// ketergantungan ke layanan luar yang bisa goyah) -> kirim ke Gemini 3
-// Flash via Replicate pakai kerangka analisis yang sama persis dengan
-// mode Teks (fakta/framing/logika/provokasi/konteks).
+// Consens — Supabase Edge Function: analyze-url
 //
-// analyze-text/index.ts sengaja TIDAK disentuh/refactor supaya mode Teks
-// yang sudah live tidak ikut berisiko regresi. Boilerplate yang sama
-// (CORS, panggilan Replicate, parsing JSON) diekstrak ke folder _shared/
-// dan dipakai bersama di sini.
+// SELF-CONTAINED VERSION
+// Upload/update manual: cukup 1 file index.ts.
+// Tidak memakai ../_shared/*
+//
+// Fungsi:
+// URL berita publik -> Gemini Flash URL Context -> analisis Consens -> JSON.
+//
+// Secret yang diperlukan:
+// GEMINI_API_KEY
+//
+// Model:
+// gemini-3.8-flash
 
-import { parseHTML } from "https://esm.sh/linkedom@0.16.11";
-import { Readability } from "https://esm.sh/@mozilla/readability@0.5.0";
-import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
-import { extractJson, SCHEMA_HINT } from "../_shared/analysis.ts";
-import { callGemini } from "../_shared/replicate.ts";
-import { checkUrlSafety } from "../_shared/ssrf-guard.ts";
+const GEMINI_MODEL = "gemini-3.8-flash";
 
-const MAX_ARTICLE_LENGTH = 6000; // artikel biasanya lebih panjang dari teks tempelan
-const MAX_HTML_BYTES = 3_000_000; // ~3MB, cukup buat halaman berita wajar
-const MAX_REDIRECTS = 5;
-const TOTAL_BUDGET_MS = 40_000; // anggaran waktu fetch + AI, sebelum edge function nyerah
-const FETCH_USER_AGENT =
-  "Mozilla/5.0 (compatible; ContentSenseBot/1.0; +https://ranz-ai.com) AppleWebKit/537.36";
+const GEMINI_URL =
+  `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
+
+const MAX_URL_LENGTH = 2048;
+const REQUEST_TIMEOUT_MS = 45_000;
+
+const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") || "*";
+
+function corsHeaders(): Record<string, string> {
+  return {
+    "Access-Control-Allow-Origin": ALLOWED_ORIGIN,
+    "Access-Control-Allow-Headers":
+      "authorization, x-client-info, apikey, content-type",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+  };
+}
+
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: {
+      ...corsHeaders(),
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  });
+}
+
+type Category = {
+  key: string;
+  badge: string;
+  badgeTone: string;
+  desc: string;
+};
+
+type Analysis = {
+  quote?: string;
+  score: number;
+  scoreTone: string;
+  scoreStatus: string;
+  categories: Category[];
+  summary: string;
+};
+
+function isValidAnalysis(value: unknown): value is Analysis {
+  if (!value || typeof value !== "object") return false;
+
+  const v = value as Record<string, unknown>;
+
+  return (
+    typeof v.score === "number" &&
+    v.score >= 0 &&
+    v.score <= 100 &&
+    typeof v.scoreTone === "string" &&
+    typeof v.scoreStatus === "string" &&
+    Array.isArray(v.categories) &&
+    v.categories.length >= 5 &&
+    typeof v.summary === "string"
+  );
+}
+
+function extractJson(raw: string): Analysis | null {
+  const cleaned = raw
+    .trim()
+    .replace(/^```json\s*/i, "")
+    .replace(/^```\s*/i, "")
+    .replace(/```\s*$/i, "")
+    .trim();
+
+  try {
+    const parsed = JSON.parse(cleaned);
+    if (isValidAnalysis(parsed)) return parsed;
+  } catch {
+    // lanjut ke fallback
+  }
+
+  const start = cleaned.indexOf("{");
+  const end = cleaned.lastIndexOf("}");
+
+  if (start !== -1 && end > start) {
+    try {
+      const parsed = JSON.parse(cleaned.slice(start, end + 1));
+      if (isValidAnalysis(parsed)) return parsed;
+    } catch {
+      // invalid JSON
+    }
+  }
+
+  return null;
+}
 
 const SYSTEM_INSTRUCTION = `
-Kamu adalah mesin analisis literasi informasi untuk Content Sense.
-Analisis artikel berita berikut (hasil ekstraksi otomatis dari sebuah
-link, bukan tempelan manual pengguna) dari 5 sudut pandang, masing-masing
-WAJIB muncul satu kali di array "categories" dengan key persis: fakta,
-framing, logika, provokasi, konteks.
-1. fakta: apakah klaim utama artikel dapat diverifikasi berdasarkan informasi yang tersedia. Jika tidak yakin atau butuh sumber terkini, tandai perlu verifikasi. Jangan mengarang sumber atau fakta.
-2. framing: apakah pemilihan kata, judul, atau sudut pandang artikel cenderung menggiring opini.
-3. logika: apakah terdapat logical fallacy atau alur berpikir yang tidak valid dalam argumen artikel.
-4. provokasi: apakah artikel dirancang untuk memicu reaksi emosional yang berlebihan.
-5. konteks: apakah ada informasi penting yang mungkin hilang atau dihilangkan dari artikel.
+Kamu adalah mesin analisis literasi informasi untuk Consens.
 
-Aturan isi:
-- Jawab hanya dalam Bahasa Indonesia.
-- score adalah tingkat kepercayaan terhadap klaim utama artikel secara keseluruhan, 0-100.
-- Kalau artikel lebih berupa opini/kolom dan bukan klaim faktual, jangan memaksakan penilaian benar atau salah.
-- Jangan membuat nama sumber, statistik, kutipan, atau fakta yang tidak diketahui.
-- Teks yang kamu terima adalah hasil ekstraksi otomatis dari HTML — mungkin ada sisa noise (nama penulis, tanggal, label kategori). Fokus ke isi artikelnya, abaikan noise semacam itu.
-- summary harus 2-4 kalimat, netral, jelas, dan mendidik.
-- "desc" di setiap kategori WAJIB singkat: maksimal 1 kalimat pendek (sekitar 20 kata). Jangan bertele-tele — ini supaya seluruh JSON muat dan tidak terpotong.
+Kamu menerima URL artikel berita atau halaman informasi publik.
+Gunakan URL Context untuk membaca isi URL yang diberikan. Analisis hanya
+informasi yang benar-benar dapat kamu akses dari halaman tersebut.
 
-Aturan format (WAJIB, ini paling penting):
-- Balas HANYA dengan satu objek JSON valid, sesuai struktur berikut. Tidak
-  boleh ada teks lain, tidak boleh ada markdown code fence (\`\`\`), tidak
-  boleh ada penjelasan sebelum/sesudah JSON.
-${SCHEMA_HINT}
+Analisis dari 5 sudut pandang:
+1. fakta
+2. framing
+3. logika
+4. provokasi
+5. konteks
+
+Fakta:
+- Identifikasi klaim faktual utama dalam artikel.
+- Bedakan fakta yang dinyatakan artikel dengan hal yang belum dapat diverifikasi.
+- Jangan mengarang sumber atau fakta dari luar halaman.
+- Jika klaim membutuhkan informasi terkini atau verifikasi eksternal, tandai
+  "Perlu Verifikasi".
+
+Framing:
+- Analisis pilihan kata, judul, penekanan, sudut pandang, dan informasi yang
+  ditonjolkan.
+- Jangan menganggap framing otomatis berarti informasi tersebut salah.
+
+Logika:
+- Cari logical fallacy atau lompatan kesimpulan jika memang terlihat.
+- Jangan memaksakan adanya logical fallacy.
+
+Provokasi:
+- Analisis apakah judul atau bahasa artikel cenderung memicu emosi kuat,
+  kemarahan, ketakutan, atau konflik.
+- Bedakan bahasa emosional dengan bukti manipulasi.
+
+Konteks:
+- Identifikasi informasi penting yang belum tersedia dari halaman tersebut,
+  seperti tanggal, sumber primer, data pembanding, kronologi, atau konteks
+  kejadian.
+
+ATURAN:
+- Jawab hanya Bahasa Indonesia.
+- Jangan membuat-buat nama sumber, angka, tanggal, kutipan, atau fakta.
+- Jangan memberikan vonis "hoaks" hanya karena informasi belum terverifikasi.
+- Jika informasi tidak cukup, katakan perlu verifikasi.
+- score 0-100 adalah tingkat kepercayaan terhadap klaim utama berdasarkan
+  informasi yang tersedia, bukan skor kualitas media atau penulis.
+- Jika artikel tidak memiliki klaim faktual yang jelas, gunakan score sekitar
+  50 dan jelaskan keterbatasannya.
+- summary 2-4 kalimat.
+- desc setiap kategori maksimal 1-2 kalimat.
+- Kategori harus tepat: fakta, framing, logika, provokasi, konteks.
+- Kembalikan HANYA JSON valid. Jangan gunakan markdown.
+
+Format JSON:
+{
+  "quote": "<klaim/judul utama artikel secara singkat>",
+  "score": 0,
+  "scoreTone": "warn",
+  "scoreStatus": "Perlu Verifikasi",
+  "categories": [
+    {
+      "key": "fakta",
+      "badge": "Perlu Verifikasi",
+      "badgeTone": "warn",
+      "desc": "..."
+    },
+    {
+      "key": "framing",
+      "badge": "Netral",
+      "badgeTone": "neutral",
+      "desc": "..."
+    },
+    {
+      "key": "logika",
+      "badge": "Tidak Ada Temuan Jelas",
+      "badgeTone": "neutral",
+      "desc": "..."
+    },
+    {
+      "key": "provokasi",
+      "badge": "Perlu Diperhatikan",
+      "badgeTone": "info",
+      "desc": "..."
+    },
+    {
+      "key": "konteks",
+      "badge": "Butuh Konteks",
+      "badgeTone": "info",
+      "desc": "..."
+    }
+  ],
+  "summary": "..."
+}
 `;
 
-// Baca body dengan batas ukuran, supaya halaman raksasa/aneh-aneh tidak
-// menghabiskan memory edge function.
-async function readBodyWithLimit(res: Response, maxBytes: number): Promise<string> {
-  const reader = res.body?.getReader();
-  if (!reader) return await res.text();
-
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  while (true) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    chunks.push(value);
-    if (total >= maxBytes) {
-      await reader.cancel().catch(() => {});
-      break;
-    }
-  }
-
-  const size = Math.min(total, maxBytes);
-  const buffer = new Uint8Array(size);
-  let offset = 0;
-  for (const chunk of chunks) {
-    const remaining = buffer.length - offset;
-    if (remaining <= 0) break;
-    const slice = chunk.byteLength > remaining ? chunk.subarray(0, remaining) : chunk;
-    buffer.set(slice, offset);
-    offset += slice.byteLength;
-  }
-  return new TextDecoder("utf-8").decode(buffer);
-}
-
-// Fetch dengan validasi SSRF di SETIAP hop redirect (redirect: "manual"),
-// bukan cuma di URL awal — supaya redirect ke alamat internal tidak lolos.
-async function fetchArticleHtml(
-  startUrl: URL,
-  deadlineMs: number,
-): Promise<{ ok: true; html: string; finalUrl: URL } | { ok: false; status: number; error: string }> {
-  let current = startUrl;
-
-  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
-    const check = checkUrlSafety(current.toString());
-    if (!check.safe) {
-      return { ok: false, status: 400, error: check.reason };
-    }
-
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), Math.max(deadlineMs - Date.now(), 1000));
-    let res: Response;
-    try {
-      res = await fetch(current.toString(), {
-        signal: controller.signal,
-        redirect: "manual",
-        headers: {
-          "User-Agent": FETCH_USER_AGENT,
-          "Accept": "text/html,application/xhtml+xml",
-        },
-      });
-    } catch (err) {
-      clearTimeout(timeout);
-      console.error("Gagal fetch URL:", err);
-      return { ok: false, status: 502, error: "Gagal mengakses URL tersebut. Pastikan link bisa diakses publik." };
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    if (res.status >= 300 && res.status < 400) {
-      const location = res.headers.get("location");
-      if (!location) {
-        return { ok: false, status: 502, error: "URL redirect tanpa tujuan yang jelas." };
-      }
-      try {
-        current = new URL(location, current);
-      } catch {
-        return { ok: false, status: 502, error: "URL redirect tidak valid." };
-      }
-      continue;
-    }
-
-    if (!res.ok) {
-      return { ok: false, status: 502, error: `Halaman mengembalikan status ${res.status}.` };
-    }
-
-    const contentType = res.headers.get("content-type") || "";
-    if (!contentType.includes("html")) {
-      return { ok: false, status: 400, error: "URL ini bukan halaman HTML (artikel/berita)." };
-    }
-
-    const html = await readBodyWithLimit(res, MAX_HTML_BYTES);
-    return { ok: true, html, finalUrl: current };
-  }
-
-  return { ok: false, status: 502, error: "Terlalu banyak redirect." };
-}
-
-function extractArticle(html: string, baseUrl: string): { title: string; text: string } | null {
+function validatePublicUrl(value: string): string | null {
   try {
-    const { document } = parseHTML(html);
-    const base = document.createElement("base");
-    base.setAttribute("href", baseUrl);
-    document.head?.appendChild(base);
+    const url = new URL(value);
 
-    // deno-lint-ignore no-explicit-any
-    const reader = new Readability(document as any);
-    const article = reader.parse();
-    if (!article || !article.textContent) return null;
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null;
+    }
 
-    const text = article.textContent.replace(/[ \t]+/g, " ").replace(/\n{3,}/g, "\n\n").trim();
-    if (!text) return null;
+    // URL Context hanya bekerja pada URL publik.
+    // Tolak localhost/private host dasar agar endpoint tidak digunakan
+    // sebagai proxy internal.
+    const hostname = url.hostname.toLowerCase();
 
-    return { title: (article.title || "").trim(), text };
-  } catch (err) {
-    console.error("Gagal parsing artikel:", err);
+    const blockedHosts = new Set([
+      "localhost",
+      "127.0.0.1",
+      "0.0.0.0",
+      "::1",
+    ]);
+
+    if (blockedHosts.has(hostname)) {
+      return null;
+    }
+
+    if (
+      hostname.startsWith("10.") ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("127.")
+    ) {
+      return null;
+    }
+
+    if (value.length > MAX_URL_LENGTH) {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
     return null;
   }
 }
 
+function getGeminiText(data: any): string {
+  const parts = data?.candidates?.[0]?.content?.parts;
+
+  if (!Array.isArray(parts)) return "";
+
+  return parts
+    .map((part: any) => part?.text || "")
+    .filter(Boolean)
+    .join("\n")
+    .trim();
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
-    return new Response(null, { status: 204, headers: corsHeaders() });
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders(),
+    });
   }
+
   if (req.method !== "POST") {
     return jsonResponse({ error: "Method not allowed" }, 405);
   }
 
-  const apiKey = Deno.env.get("REPLICATE_API_TOKEN");
+  const apiKey = Deno.env.get("GEMINI_API_KEY");
+
   if (!apiKey) {
-    console.error("REPLICATE_API_TOKEN belum di-set.");
-    return jsonResponse({ error: "Server belum dikonfigurasi." }, 500);
-  }
-
-  let body: { url?: unknown };
-  try {
-    body = await req.json();
-  } catch {
-    return jsonResponse({ error: "Body harus berupa JSON." }, 400);
-  }
-
-  if (typeof body.url !== "string" || !body.url.trim()) {
-    return jsonResponse({ error: "Field 'url' harus berupa string dan tidak boleh kosong." }, 400);
-  }
-
-  const rawUrl = body.url.trim();
-  const initialCheck = checkUrlSafety(rawUrl);
-  if (!initialCheck.safe) {
-    return jsonResponse({ error: initialCheck.reason }, 400);
-  }
-
-  const deadline = Date.now() + TOTAL_BUDGET_MS;
-
-  const fetched = await fetchArticleHtml(initialCheck.url, deadline);
-  if (!fetched.ok) {
-    return jsonResponse({ error: fetched.error }, fetched.status);
-  }
-
-  const article = extractArticle(fetched.html, fetched.finalUrl.toString());
-  if (!article) {
+    console.error("GEMINI_API_KEY belum di-set.");
     return jsonResponse(
-      { error: "Gagal mengambil isi artikel dari halaman ini. Coba link lain, atau halaman ini mungkin butuh JavaScript untuk menampilkan kontennya." },
-      422,
+      { error: "Server belum dikonfigurasi." },
+      500,
     );
   }
 
-  const articleText = article.text.length > MAX_ARTICLE_LENGTH
-    ? `${article.text.slice(0, MAX_ARTICLE_LENGTH)}…`
-    : article.text;
+  let body: { url?: unknown };
 
-  const result = await callGemini(
-    apiKey,
-    {
-      prompt: `Analisis artikel berikut:\n\nJudul: ${article.title || "(tanpa judul)"}\n\nIsi:\n"""${articleText}"""`,
-      system_instruction: SYSTEM_INSTRUCTION,
-      thinking_level: "low",
-      max_output_tokens: 2500,
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse(
+      { error: "Body harus berupa JSON." },
+      400,
+    );
+  }
+
+  if (typeof body.url !== "string") {
+    return jsonResponse(
+      { error: "Field 'url' harus berupa string." },
+      400,
+    );
+  }
+
+  const url = validatePublicUrl(body.url.trim());
+
+  if (!url) {
+    return jsonResponse(
+      {
+        error:
+          "URL tidak valid. Gunakan URL publik lengkap yang diawali http:// atau https://.",
+      },
+      400,
+    );
+  }
+
+  const prompt = `
+Analisis artikel/halaman web pada URL berikut menggunakan URL Context:
+
+${url}
+
+Fokus pada isi halaman yang berhasil kamu ambil dari URL tersebut.
+Jangan mengarang informasi yang tidak tersedia.
+Kembalikan hasil sesuai JSON schema yang diminta dalam system instruction.
+`;
+
+  const payload = {
+    systemInstruction: {
+      parts: [{ text: SYSTEM_INSTRUCTION }],
     },
-    deadline,
-  );
 
-  if (!result.ok) {
-    return jsonResponse({ error: result.error }, result.status);
+    contents: [
+      {
+        role: "user",
+        parts: [{ text: prompt }],
+      },
+    ],
+
+    // URL Context adalah tool resmi Gemini untuk mengambil konten dari
+    // URL publik yang diberikan.
+    tools: [
+      {
+        url_context: {},
+      },
+    ],
+
+    generationConfig: {
+      responseMimeType: "application/json",
+      temperature: 0.2,
+      maxOutputTokens: 2500,
+    },
+  };
+
+  let geminiRes: Response;
+
+  try {
+    const controller = new AbortController();
+
+    const timeout = setTimeout(
+      () => controller.abort(),
+      REQUEST_TIMEOUT_MS,
+    );
+
+    try {
+      geminiRes = await fetch(GEMINI_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-goog-api-key": apiKey,
+        },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+  } catch (err) {
+    console.error("Gagal menghubungi Gemini:", err);
+
+    return jsonResponse(
+      { error: "Gagal menghubungi layanan AI." },
+      502,
+    );
   }
 
-  const analysis = extractJson(result.rawText);
+  if (!geminiRes.ok) {
+    const errText = await geminiRes.text();
+
+    console.error(
+      `Gemini API error ${geminiRes.status}:`,
+      errText,
+    );
+
+    if (geminiRes.status === 400) {
+      return jsonResponse(
+        {
+          error:
+            "Request URL tidak dapat diproses oleh Gemini.",
+        },
+        502,
+      );
+    }
+
+    if (geminiRes.status === 401 || geminiRes.status === 403) {
+      return jsonResponse(
+        {
+          error:
+            "Gemini API tidak terautorisasi. Periksa GEMINI_API_KEY dan billing.",
+        },
+        502,
+      );
+    }
+
+    if (geminiRes.status === 429) {
+      return jsonResponse(
+        {
+          error:
+            "Batas penggunaan Gemini tercapai. Coba lagi nanti.",
+        },
+        429,
+      );
+    }
+
+    return jsonResponse(
+      { error: "Layanan AI mengembalikan error." },
+      502,
+    );
+  }
+
+  let geminiData: any;
+
+  try {
+    geminiData = await geminiRes.json();
+  } catch (err) {
+    console.error("Respons Gemini bukan JSON valid:", err);
+
+    return jsonResponse(
+      { error: "Respons AI tidak valid." },
+      502,
+    );
+  }
+
+  const rawText = getGeminiText(geminiData);
+
+  if (!rawText) {
+    console.error(
+      "Gemini tidak mengembalikan teks:",
+      JSON.stringify(geminiData),
+    );
+
+    return jsonResponse(
+      {
+        error:
+          "Gemini tidak berhasil mengambil atau menganalisis URL tersebut.",
+      },
+      502,
+    );
+  }
+
+  const analysis = extractJson(rawText);
+
   if (!analysis) {
-    console.error("Gagal parse/validasi JSON dari model:", result.rawText);
-    return jsonResponse({ error: "Format hasil analisis tidak valid." }, 502);
+    console.error(
+      "Gagal parse JSON Gemini:",
+      rawText,
+    );
+
+    return jsonResponse(
+      { error: "Format hasil analisis tidak valid." },
+      502,
+    );
   }
 
-  const fallbackQuote = articleText.length > 140 ? `${articleText.slice(0, 140)}…` : articleText;
+  // Metadata retrieval dari URL Context dapat digunakan untuk debugging.
+  const urlMetadata =
+    geminiData?.candidates?.[0]?.url_context_metadata?.url_metadata ||
+    [];
+
+  const retrievedUrl =
+    urlMetadata.find(
+      (item: any) =>
+        item?.url_retrieval_status ===
+        "URL_RETRIEVAL_STATUS_SUCCESS",
+    )?.retrieved_url || url;
 
   return jsonResponse({
-    quote: article.title || fallbackQuote,
-    source: fetched.finalUrl.hostname.replace(/^www\./, ""),
+    quote:
+      analysis.quote ||
+      "Artikel dari URL yang kamu masukkan",
+    source: retrievedUrl,
+    url,
     score: analysis.score,
     scoreTone: analysis.scoreTone,
     scoreStatus: analysis.scoreStatus,
