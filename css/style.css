@@ -62,27 +62,6 @@ svg {
   font-size: 14px;
 }
 
-.top-badge {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  padding: 7px 14px;
-  border-radius: 30px;
-  background: #eafbf1;
-  border: 1px solid #cdf0dc;
-  color: #1a8f52;
-  font-size: 12.5px;
-  font-weight: 600;
-}
-
-.top-badge-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #22b866;
-  flex-shrink: 0;
-}
-
 /* Layout */
 .wrap {
   max-width: none;
@@ -741,8 +720,7 @@ footer {
   .info {
     grid-template-columns: 1fr;
   }
-  .nav,
-  .top-badge {
+  .nav {
     display: none;
   }
   .banner-asset-img {
