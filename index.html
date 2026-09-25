@@ -46,7 +46,6 @@
               <path d="M8.7 11.1L7.8 12C6.7 13.1 5 13.1 3.9 12C2.8 10.9 2.8 9.2 3.9 8.1L4.8 7.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
             URL
-            <span class="soon-dot" aria-hidden="true"></span>
           </button>
           <button type="button" class="mode-btn" data-mode="photo" role="tab" aria-selected="false">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -55,7 +54,6 @@
               <path d="M3 11.5L6.3 8.5L8.5 10.3L10.5 8L13.3 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             Foto
-            <span class="soon-dot" aria-hidden="true"></span>
           </button>
           <button type="button" class="mode-btn" data-mode="video" role="tab" aria-selected="false">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,12 +95,12 @@
           </div>
         </div>
 
-        <!-- Mode: URL (disabled untuk MVP) -->
+        <!-- Mode: URL -->
         <div class="mode-body" data-mode-body="url">
-          <input type="text" id="url-input" placeholder="Tempel link artikel, postingan, atau video di sini..." disabled>
+          <input type="text" id="url-input" placeholder="Tempel link artikel berita di sini...">
         </div>
 
-        <!-- Mode: Foto (disabled untuk MVP) -->
+        <!-- Mode: Foto -->
         <div class="mode-body" data-mode-body="photo">
           <div class="drop" id="photo-drop">
             <div>
@@ -111,10 +109,11 @@
                 <path d="M5 17V19.5C5 20.6 5.9 21.5 7 21.5H19C20.1 21.5 21 20.6 21 19.5V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
               </svg>
               <strong>Klik atau seret gambar ke sini</strong>
-              JPG, PNG, WEBP &middot; Maks. 20 MB
+              JPG, PNG, WEBP &middot; Maks. 5 gambar, total 30 MB
             </div>
           </div>
-          <input type="file" id="photo-input" accept="image/*" disabled>
+          <ul class="photo-file-list" id="photo-file-list"></ul>
+          <input type="file" id="photo-input" accept="image/*" multiple>
         </div>
 
         <!-- Mode: Video (disabled untuk MVP) -->

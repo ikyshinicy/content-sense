@@ -10,12 +10,12 @@ const CONTENT_SENSE_MODES = {
   },
   url: {
     label: 'URL',
-    desc: 'Tempel link artikel, postingan, atau video untuk dianalisis. Segera hadir.',
+    desc: 'Tempel link artikel berita untuk dianalisis fakta, bias, framing, dan logikanya.',
     buttonText: 'Analisis URL',
   },
   photo: {
     label: 'Foto',
-    desc: 'Unggah gambar untuk mengecek konteks, manipulasi visual, dan klaim yang menyertainya. Segera hadir.',
+    desc: 'Unggah hingga 5 gambar (maks 30 MB) untuk dianalisis isinya. Belum bisa cek keaslian/reverse image search.',
     buttonText: 'Analisis Foto',
   },
   video: {

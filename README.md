@@ -30,15 +30,25 @@ content-sense/
 ## Status saat ini
 
 Halaman dibagi 1 card dengan 2 kolom: kiri toggle mode input (Teks, URL, Foto,
-Video), kanan panel hasil. Untuk MVP, hanya mode **Teks** yang aktif — alur
-kerja (ketik, klik analisis, loading state, tampil hasil) sudah jalan, tapi
-hasilnya masih data dummy. Mode URL, Foto, dan Video tampil di toggle dengan
-penanda "Segera hadir" dan input dinonaktifkan (`disabled`) sampai
-backend/AI-nya siap.
+Video), kanan panel hasil. Mode **Teks**, **URL**, dan **Foto** sudah aktif
+dan tersambung ke Edge Function masing-masing (`analyze-text`, `analyze-url`,
+`analyze-photo`) yang jalanin analisis lewat Gemini 3 Flash via Replicate.
+Mode **Video** masih "Segera hadir" dan inputnya dinonaktifkan (`disabled`)
+sampai backend-nya dibuat.
 
-Cari komentar `// TODO` di masing-masing file `js/analyze-*.js` untuk tahu
-persis di mana nanti nyambungin ke API/AI asli, dan hapus atribut `disabled`
-terkait di `index.html` saat mode itu mau diaktifkan.
+Detail per mode:
+- **Teks** — tempel/ketik teks, dianalisis langsung.
+- **URL** — tempel link artikel berita; backend fetch HTML-nya, ekstrak isi
+  artikel (linkedom + Readability), baru dianalisis. Belum tentu berhasil di
+  situs yang render kontennya pakai JavaScript berat.
+- **Foto** — upload maks 5 gambar / total 30MB, dianalisis sekaligus sebagai
+  satu kesatuan (bukan storage — file diproses lalu dibuang). Analisisnya
+  cuma berdasarkan isi gambar yang terlihat; belum ada reverse image search
+  atau deteksi manipulasi/AI-generated.
+
+Cari komentar `// TODO` di `js/analyze-video.js` untuk tahu di mana nanti
+nyambungin mode Video, dan hapus atribut `disabled` terkait di `index.html`
+saat mode itu mau diaktifkan.
 
 Semua ikon di UI pakai SVG inline (bukan emoji).
 

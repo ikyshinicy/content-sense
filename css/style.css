@@ -217,6 +217,56 @@ svg {
   font-weight: 700;
 }
 
+/* List preview file yang sudah dipilih (mode Foto) */
+.photo-file-list {
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.photo-file-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #dbe3f5;
+  background: #f7f9ff;
+  border-radius: 10px;
+  padding: 7px 10px;
+  font-size: 12.5px;
+  color: #3d5aa8;
+}
+
+.photo-file-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
+}
+
+.photo-file-size {
+  color: #66708a;
+  flex-shrink: 0;
+}
+
+.photo-file-remove {
+  border: 0;
+  background: transparent;
+  color: #c22b4e;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  flex-shrink: 0;
+}
+
+.photo-file-remove:hover {
+  color: #8f1d38;
+}
+
 /* Buttons */
 .analyze-btn {
   width: 100%;
