@@ -54,12 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // TODO: aktifkan mode ini (hapus atribut `disabled` di index.html),
     // lalu ganti blok ini dengan panggilan API analisis gambar sungguhan
     // (reverse image search, deteksi manipulasi, cek konteks asal foto).
+    // Placeholder: mode ini belum aktif, jadi belum memanggil
+    // window.ContentSense.renderAnalysisResult sungguhan.
     window.ContentSense.simulateProcessing(analyzeBtn, 'Menganalisis...', () => {
-      window.ContentSense.renderResult(
-        'Hasil Analisis Foto',
-        `<p>File: <b>${selectedFile.name}</b></p>
-         <p>Indikasi manipulasi: rendah &middot; Konteks asal: belum terverifikasi</p>`
-      );
+      alert(`Mode analisis Foto segera hadir. (File terpilih: ${selectedFile.name})`);
     });
   });
 });

@@ -6,7 +6,7 @@ const CONTENT_SENSE_MODES = {
   text: {
     label: 'Teks',
     desc: 'Tempel teks, caption, atau transkrip untuk dianalisis fakta, bias, framing, dan logikanya.',
-    buttonText: 'Analisis Teks',
+    buttonText: 'Analisis Sekarang',
   },
   url: {
     label: 'URL',
@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const modeBodies = document.querySelectorAll('[data-mode-body]');
   const modeDesc = document.getElementById('mode-desc');
   const analyzeBtn = document.getElementById('analyze-btn');
+  const analyzeBtnLabel = document.getElementById('analyze-btn-label');
 
   function setActiveMode(mode) {
     modeButtons.forEach((btn) => {
@@ -44,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const config = CONTENT_SENSE_MODES[mode];
     modeDesc.textContent = config.desc;
-    analyzeBtn.textContent = config.buttonText;
+    analyzeBtnLabel.textContent = config.buttonText;
     analyzeBtn.dataset.mode = mode;
   }
 

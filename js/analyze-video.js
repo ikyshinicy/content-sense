@@ -54,12 +54,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // TODO: aktifkan mode ini (hapus atribut `disabled` di index.html),
     // lalu ganti blok ini dengan: upload `selectedFile` ke endpoint
     // backend, lalu render hasil asli (klaim, framing, provokasi, dsb).
+    // Placeholder: mode ini belum aktif, jadi belum memanggil
+    // window.ContentSense.renderAnalysisResult sungguhan.
     window.ContentSense.simulateProcessing(analyzeBtn, 'Menganalisis...', () => {
-      window.ContentSense.renderResult(
-        'Hasil Analisis Video',
-        `<p>File: <b>${selectedFile.name}</b></p>
-         <p>Narasi: netral &middot; Framing: tidak terdeteksi kuat &middot; Klaim: 2 klaim ditemukan (belum diverifikasi)</p>`
-      );
+      alert(`Mode analisis Video segera hadir. (File terpilih: ${selectedFile.name})`);
     });
   });
 });
