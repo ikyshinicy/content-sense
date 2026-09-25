@@ -64,6 +64,7 @@ Aturan isi:
 - Jika teks adalah opini/curhat dan bukan klaim faktual, jangan memaksakan penilaian benar atau salah.
 - Jangan membuat nama sumber, statistik, kutipan, atau fakta yang tidak diketahui.
 - summary harus 2-4 kalimat, netral, jelas, dan mendidik.
+- "desc" di setiap kategori WAJIB singkat: maksimal 1 kalimat pendek (sekitar 20 kata). Jangan bertele-tele — ini supaya seluruh JSON muat dan tidak terpotong.
 
 Aturan format (WAJIB, ini paling penting):
 - Balas HANYA dengan satu objek JSON valid, sesuai struktur berikut. Tidak
@@ -158,7 +159,7 @@ Deno.serve(async (req: Request) => {
       prompt: `Analisis teks berikut:\n\n"""${text}"""`,
       system_instruction: SYSTEM_INSTRUCTION,
       thinking_level: "low",
-      max_output_tokens: 1200,
+      max_output_tokens: 2500,
     },
   };
 
