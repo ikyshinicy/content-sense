@@ -97,6 +97,11 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: `Teks maksimal ${MAX_TEXT_LENGTH} karakter.` }, 400);
   }
 
+  // PENTING: endpoint ":generateContent" (bukan Interactions API baru) masih
+  // memakai GenerationConfig lama — field-nya "responseMimeType" +
+  // "responseSchema" (flat), BUKAN "responseFormat" bergaya Interactions API.
+  // "temperature/top_p/top_k" juga sudah tidak direkomendasikan Google untuk
+  // model Gemini 3.x, jadi sengaja tidak diikutkan di sini.
   const geminiPayload = {
     systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] },
     contents: [{
@@ -104,13 +109,8 @@ Deno.serve(async (req: Request) => {
       parts: [{ text: `Analisis teks berikut:\n\n"""${text}"""` }],
     }],
     generationConfig: {
-      responseFormat: {
-        text: {
-          mimeType: "application/json",
-          schema: RESPONSE_SCHEMA,
-        },
-      },
-      temperature: 0.3,
+      responseMimeType: "application/json",
+      responseSchema: RESPONSE_SCHEMA,
       maxOutputTokens: 1200,
     },
   };
