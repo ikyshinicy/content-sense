@@ -14,7 +14,7 @@
 // Opsional, batasi origin yang boleh manggil (default: izinkan semua):
 //   supabase secrets set ALLOWED_ORIGIN=https://username.github.io
 
-const GEMINI_MODEL = "gemini-2.5-flash";
+const GEMINI_MODEL = "gemini-3.5-flash";
 const GEMINI_URL =
   `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;
 
