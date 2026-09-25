@@ -37,14 +37,24 @@ const CATEGORY_META = {
 };
 
 async function requestAnalysis(text) {
-  const url = window.ContentSenseConfig && window.ContentSenseConfig.SUPABASE_FUNCTION_URL;
-  if (!url || url.includes('YOUR-PROJECT-REF')) {
+  const config = window.ContentSenseConfig || {};
+  const url = config.SUPABASE_FUNCTION_URL;
+  const anonKey = config.SUPABASE_ANON_KEY;
+
+  if (!url) {
     throw new Error('URL Edge Function belum diisi di js/config.js');
+  }
+  if (!anonKey || anonKey.includes('PASTE_ANON_PUBLIC_KEY')) {
+    throw new Error('Anon key Supabase belum diisi di js/config.js');
   }
 
   const res = await fetch(url, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
+    },
     body: JSON.stringify({ text }),
   });
 
