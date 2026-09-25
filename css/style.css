@@ -28,17 +28,15 @@ svg {
 }
 
 .logo {
-  font-size: 25px;
-  font-weight: 800;
-}
-
-.logo span {
-  color: #1769ff;
+  display: block;
+  height: 26px;
+  width: auto;
 }
 
 .tag {
   font-size: 12px;
   color: #66708a;
+  margin-top: 4px;
 }
 
 .nav {
