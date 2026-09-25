@@ -1,18 +1,22 @@
 // Content Sense — analyze-photo.js
-// PLACEHOLDER: belum tersambung ke AI. Ganti bagian yang ditandai TODO
-// saat backend/AI analisis foto sudah siap.
+// SEGERA HADIR: mode Foto belum aktif di MVP ini (input masih disabled
+// di index.html). Logic upload/drag-drop disiapkan di sini supaya
+// tinggal diaktifkan begitu backend/AI analisis foto sudah siap.
 
 document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('photo-drop');
   const fileInput = document.getElementById('photo-input');
-  const button = document.getElementById('photo-analyze-btn');
-  const resultEl = document.getElementById('photo-result');
+  const analyzeBtn = document.getElementById('analyze-btn');
 
   let selectedFile = null;
 
-  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', () => {
+    if (fileInput.disabled) return;
+    fileInput.click();
+  });
 
   dropZone.addEventListener('dragover', (e) => {
+    if (fileInput.disabled) return;
     e.preventDefault();
     dropZone.classList.add('dragover');
   });
@@ -20,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.classList.remove('dragover');
   });
   dropZone.addEventListener('drop', (e) => {
+    if (fileInput.disabled) return;
     e.preventDefault();
     dropZone.classList.remove('dragover');
     if (e.dataTransfer.files.length > 0) {
@@ -38,20 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.innerHTML = `<div><strong class="filename">${file.name}</strong>Klik untuk ganti foto</div>`;
   }
 
-  button.addEventListener('click', () => {
+  analyzeBtn.addEventListener('click', () => {
+    if (analyzeBtn.dataset.mode !== 'photo') return;
+
     if (!selectedFile) {
-      alert('Pilih foto terlebih dahulu.');
+      alert('Mode analisis Foto segera hadir.');
       return;
     }
 
-    // TODO: ganti simulasi ini dengan panggilan API analisis gambar sungguhan
-    // (misal: reverse image search, deteksi manipulasi, cek konteks asal foto).
-    window.ContentSense.simulateProcessing(button, 'Menganalisis...', () => {
+    // TODO: aktifkan mode ini (hapus atribut `disabled` di index.html),
+    // lalu ganti blok ini dengan panggilan API analisis gambar sungguhan
+    // (reverse image search, deteksi manipulasi, cek konteks asal foto).
+    window.ContentSense.simulateProcessing(analyzeBtn, 'Menganalisis...', () => {
       window.ContentSense.renderResult(
-        resultEl,
         'Hasil Analisis Foto',
         `<p>File: <b>${selectedFile.name}</b></p>
-         <p>Indikasi manipulasi: rendah · Konteks asal: belum terverifikasi</p>`
+         <p>Indikasi manipulasi: rendah &middot; Konteks asal: belum terverifikasi</p>`
       );
     });
   });

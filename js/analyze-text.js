@@ -4,10 +4,13 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   const textarea = document.getElementById('text-input');
-  const button = document.getElementById('text-analyze-btn');
-  const resultEl = document.getElementById('text-result');
+  const analyzeBtn = document.getElementById('analyze-btn');
 
-  button.addEventListener('click', () => {
+  analyzeBtn.addEventListener('click', () => {
+    // Tombol analisis dipakai bersama semua mode — hanya jalan kalau
+    // mode aktif saat ini adalah "text".
+    if (analyzeBtn.dataset.mode !== 'text') return;
+
     const value = textarea.value.trim();
     if (!value) {
       alert('Tempel teks terlebih dahulu.');
@@ -17,13 +20,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // TODO: ganti simulasi ini dengan panggilan API analisis teks sungguhan
     // (kirim `value` ke endpoint backend, lalu render hasil fact-check,
     // deteksi bias/framing, dan logical fallacy yang asli).
-    window.ContentSense.simulateProcessing(button, 'Menganalisis...', () => {
+    window.ContentSense.simulateProcessing(analyzeBtn, 'Menganalisis...', () => {
       const wordCount = value.split(/\s+/).filter(Boolean).length;
       window.ContentSense.renderResult(
-        resultEl,
         'Hasil Analisis Teks',
         `<p>Jumlah kata: <b>${wordCount}</b></p>
-         <p>Nada: netral · Bias terdeteksi: rendah · Fallacy: tidak ditemukan</p>`
+         <p>Nada: netral &middot; Bias terdeteksi: rendah &middot; Fallacy: tidak ditemukan</p>`
       );
     });
   });

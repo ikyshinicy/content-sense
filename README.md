@@ -9,14 +9,16 @@ Static site — HTML/CSS/JS polos, tanpa build tool.
 
 ```
 content-sense/
-├── index.html              # Halaman utama
+├── index.html              # Halaman utama (1 page, 2 kolom: input | output)
 ├── css/
 │   └── style.css           # Semua styling
 ├── js/
 │   ├── main.js              # Util bersama (renderResult, simulateProcessing)
-│   ├── analyze-video.js     # Logic upload + analisis video (placeholder)
-│   ├── analyze-photo.js     # Logic upload + analisis foto (placeholder)
-│   └── analyze-text.js      # Logic input + analisis teks (placeholder)
+│   ├── mode-toggle.js       # Switch antar mode: Teks / URL / Foto / Video
+│   ├── analyze-text.js      # Logic analisis teks (aktif — placeholder AI)
+│   ├── analyze-url.js       # Logic analisis URL (segera hadir, disabled)
+│   ├── analyze-photo.js     # Logic upload + analisis foto (segera hadir, disabled)
+│   └── analyze-video.js     # Logic upload + analisis video (segera hadir, disabled)
 ├── assets/                  # Untuk logo/icon/gambar ke depannya
 └── .github/workflows/
     └── deploy.yml           # Auto-deploy ke GitHub Pages tiap push ke main
@@ -24,10 +26,18 @@ content-sense/
 
 ## Status saat ini
 
-Semua fitur analisis (video, foto, teks) masih **placeholder**: UI dan alur
-kerja (upload, klik analisis, loading state, tampil hasil) sudah jalan, tapi
-hasilnya masih data dummy. Cari komentar `// TODO` di masing-masing file
-`js/analyze-*.js` untuk tahu persis di mana nanti nyambungin ke API/AI asli.
+Halaman dibagi 1 card dengan 2 kolom: kiri toggle mode input (Teks, URL, Foto,
+Video), kanan panel hasil. Untuk MVP, hanya mode **Teks** yang aktif — alur
+kerja (ketik, klik analisis, loading state, tampil hasil) sudah jalan, tapi
+hasilnya masih data dummy. Mode URL, Foto, dan Video tampil di toggle dengan
+penanda "Segera hadir" dan input dinonaktifkan (`disabled`) sampai
+backend/AI-nya siap.
+
+Cari komentar `// TODO` di masing-masing file `js/analyze-*.js` untuk tahu
+persis di mana nanti nyambungin ke API/AI asli, dan hapus atribut `disabled`
+terkait di `index.html` saat mode itu mau diaktifkan.
+
+Semua ikon di UI pakai SVG inline (bukan emoji).
 
 ## Jalanin lokal
 

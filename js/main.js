@@ -1,22 +1,24 @@
 // Content Sense — main.js
-// Logic umum yang dipakai di seluruh halaman (nav, util bersama).
+// Logic umum yang dipakai di seluruh halaman (util bersama untuk render hasil).
 
 /**
- * Util: tampilkan panel hasil analisis di dalam sebuah card.
- * Dipakai bareng oleh analyze-video.js, analyze-photo.js, analyze-text.js
- * supaya format hasilnya konsisten.
+ * Util: tampilkan panel hasil analisis di dalam output panel.
+ * Dipakai bareng oleh analyze-text.js (dan nanti analyze-url.js,
+ * analyze-photo.js, analyze-video.js) supaya format hasilnya konsisten.
  *
- * @param {HTMLElement} resultEl - elemen .result di dalam card terkait
- * @param {string} title - judul hasil, misal "Hasil Analisis Video"
+ * @param {string} title - judul hasil, misal "Hasil Analisis Teks"
  * @param {string} html - isi body hasil (boleh HTML sederhana)
  */
-function renderResult(resultEl, title, html) {
-  resultEl.innerHTML = `
-    <b>${title}</b>
-    ${html}
-    <span class="badge-placeholder">Contoh hasil — belum tersambung AI</span>
+function renderResult(title, html) {
+  const outputBody = document.getElementById('output-body');
+  outputBody.classList.remove('output-empty-state');
+  outputBody.innerHTML = `
+    <div class="output-result">
+      <b>${title}</b>
+      ${html}
+      <span class="badge-placeholder">Contoh hasil — belum tersambung AI</span>
+    </div>
   `;
-  resultEl.classList.add('show');
 }
 
 /**

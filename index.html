@@ -19,7 +19,12 @@
       <span>Panduan</span>
       <span>Belajar</span>
     </nav>
-    <div>Iky Shinicy&nbsp;&nbsp;⌄</div>
+    <div class="user-chip">
+      Iky Shinicy
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
   </header>
 
   <main class="wrap">
@@ -28,77 +33,170 @@
       <p>Analisis konten. Perluas perspektif. Latih nalar.<br>
          Cek fakta, deteksi framing, pahami konteks, dan belajar berpikir kritis.</p>
       <div class="badges">
-        <div class="badge">✓ Fakta</div>
-        <div class="badge">◈ Konteks</div>
-        <div class="badge">💡 Nalar</div>
+        <div class="badge">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2.5 7.2L5.5 10.2L11.5 3.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Fakta
+        </div>
+        <div class="badge">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2" y="2" width="10" height="10" rx="2.5" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M2 9L5.2 6L8 8.2L12 4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Konteks
+        </div>
+        <div class="badge">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 1.5C4.79 1.5 3 3.29 3 5.5C3 6.98 3.8 8.26 5 8.95V10.5C5 10.78 5.22 11 5.5 11H8.5C8.78 11 9 10.78 9 10.5V8.95C10.2 8.26 11 6.98 11 5.5C11 3.29 9.21 1.5 7 1.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            <path d="M5.5 12.5H8.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Nalar
+        </div>
       </div>
     </section>
 
-    <section class="grid">
+    <section class="tool">
+      <div class="tool-panel input-panel">
+        <div class="mode-toggle" role="tablist" aria-label="Mode analisis">
+          <button type="button" class="mode-btn active" data-mode="text" role="tab" aria-selected="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 4H13M3 8H13M3 12H9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            Teks
+          </button>
+          <button type="button" class="mode-btn" data-mode="url" role="tab" aria-selected="false" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M6.5 9.5L9.5 6.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M7.3 4.9L8.2 4C9.3 2.9 11 2.9 12.1 4C13.2 5.1 13.2 6.8 12.1 7.9L11.2 8.8" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+              <path d="M8.7 11.1L7.8 12C6.7 13.1 5 13.1 3.9 12C2.8 10.9 2.8 9.2 3.9 8.1L4.8 7.2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+            </svg>
+            URL
+            <span class="soon-dot" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="photo" role="tab" aria-selected="false" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3.5" width="12" height="9" rx="1.6" stroke="currentColor" stroke-width="1.3"/>
+              <circle cx="6" cy="7" r="1.2" stroke="currentColor" stroke-width="1.2"/>
+              <path d="M3 11.5L6.3 8.5L8.5 10.3L10.5 8L13.3 11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Foto
+            <span class="soon-dot" aria-hidden="true"></span>
+          </button>
+          <button type="button" class="mode-btn" data-mode="video" role="tab" aria-selected="false" disabled>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="3.8" width="8.2" height="8.4" rx="1.6" stroke="currentColor" stroke-width="1.3"/>
+              <path d="M10.2 6.6L14 4.6V11.4L10.2 9.4" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+            </svg>
+            Video
+            <span class="soon-dot" aria-hidden="true"></span>
+          </button>
+        </div>
 
-      <!-- Analisis Video -->
-      <article class="card video">
-        <div class="icon">▶</div>
-        <h2>Analisis Video</h2>
-        <p>Unggah video untuk menganalisis narasi, framing, provokasi, konteks, dan klaim.</p>
+        <p class="mode-desc" id="mode-desc">Tempel teks, caption, atau transkrip untuk dianalisis fakta, bias, framing, dan logikanya.</p>
 
-        <div class="drop" id="video-drop">
-          <div>
-            <strong>☁ Klik atau seret video ke sini</strong>
-            MP4, MOV, WEBM · Maks. 500 MB
+        <!-- Mode: Teks -->
+        <div class="mode-body active" data-mode-body="text">
+          <textarea id="text-input" placeholder="Tempel teks di sini..."></textarea>
+        </div>
+
+        <!-- Mode: URL (disabled untuk MVP) -->
+        <div class="mode-body" data-mode-body="url">
+          <input type="text" id="url-input" placeholder="Tempel link artikel, postingan, atau video di sini..." disabled>
+        </div>
+
+        <!-- Mode: Foto (disabled untuk MVP) -->
+        <div class="mode-body" data-mode-body="photo">
+          <div class="drop" id="photo-drop">
+            <div>
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 17V6M13 6L8.5 10.5M13 6L17.5 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 17V19.5C5 20.6 5.9 21.5 7 21.5H19C20.1 21.5 21 20.6 21 19.5V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <strong>Klik atau seret gambar ke sini</strong>
+              JPG, PNG, WEBP &middot; Maks. 20 MB
+            </div>
+          </div>
+          <input type="file" id="photo-input" accept="image/*" disabled>
+        </div>
+
+        <!-- Mode: Video (disabled untuk MVP) -->
+        <div class="mode-body" data-mode-body="video">
+          <div class="drop" id="video-drop">
+            <div>
+              <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M13 17V6M13 6L8.5 10.5M13 6L17.5 10.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M5 17V19.5C5 20.6 5.9 21.5 7 21.5H19C20.1 21.5 21 20.6 21 19.5V17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <strong>Klik atau seret video ke sini</strong>
+              MP4, MOV, WEBM &middot; Maks. 500 MB
+            </div>
+          </div>
+          <input type="file" id="video-input" accept="video/*" disabled>
+        </div>
+
+        <button class="analyze-btn" id="analyze-btn">Analisis Teks</button>
+      </div>
+
+      <div class="tool-panel output-panel">
+        <div class="output-header">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="2.5" y="2.5" width="13" height="13" rx="3" stroke="currentColor" stroke-width="1.4"/>
+            <path d="M5.5 9H12.5M5.5 6H12.5M5.5 12H9.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+          </svg>
+          Hasil Analisis
+        </div>
+        <div class="output-body" id="output-body">
+          <div class="output-empty">
+            <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="15" cy="15" r="9" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M21.5 21.5L26.5 26.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+            <p>Hasil analisis akan muncul di sini setelah kamu menekan tombol Analisis.</p>
           </div>
         </div>
-        <input type="file" id="video-input" accept="video/*">
-
-        <button class="red" id="video-analyze-btn">Analisis Video</button>
-        <div class="result" id="video-result"></div>
-      </article>
-
-      <!-- Analisis Foto -->
-      <article class="card photo">
-        <div class="icon">▧</div>
-        <h2>Analisis Foto</h2>
-        <p>Unggah gambar untuk mengecek konteks, manipulasi visual, dan klaim yang menyertainya.</p>
-
-        <div class="drop" id="photo-drop">
-          <div>
-            <strong>☁ Klik atau seret gambar ke sini</strong>
-            JPG, PNG, WEBP · Maks. 20 MB
-          </div>
-        </div>
-        <input type="file" id="photo-input" accept="image/*">
-
-        <button class="blue" id="photo-analyze-btn">Analisis Foto</button>
-        <div class="result" id="photo-result"></div>
-      </article>
-
-      <!-- Analisis Teks -->
-      <article class="card text">
-        <div class="icon">▤</div>
-        <h2>Analisis Teks</h2>
-        <p>Tempel teks, link, atau transkrip untuk menganalisis fakta, bias, framing, dan logika.</p>
-
-        <textarea id="text-input" placeholder="Tempel teks di sini..."></textarea>
-
-        <button class="green" id="text-analyze-btn">Analisis Teks</button>
-        <div class="result" id="text-result"></div>
-      </article>
-
+      </div>
     </section>
 
     <section class="info">
-      <div>🔎 <b>Cek Fakta</b><span>Bandingkan klaim dengan sumber terpercaya.</span></div>
-      <div>◫ <b>Deteksi Framing</b><span>Temukan sudut pandang dan konteks yang hilang.</span></div>
-      <div>🧠 <b>Analisis Logika</b><span>Kenali pola pikir, bias, dan logical fallacy.</span></div>
-      <div>📖 <b>Belajar</b><span>Latihan literasi media dan berpikir kritis.</span></div>
+      <div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M13.5 13.5L17.5 17.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <b>Cek Fakta</b><span>Bandingkan klaim dengan sumber terpercaya.</span>
+      </div>
+      <div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="14" height="14" rx="3" stroke="currentColor" stroke-width="1.5"/>
+          <rect x="6.5" y="6.5" width="7" height="7" rx="1.5" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        <b>Deteksi Framing</b><span>Temukan sudut pandang dan konteks yang hilang.</span>
+      </div>
+      <div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2.5C6.96 2.5 4.5 4.96 4.5 8C4.5 10.05 5.62 11.83 7.3 12.78V15C7.3 15.39 7.61 15.7 8 15.7H12C12.39 15.7 12.7 15.39 12.7 15V12.78C14.38 11.83 15.5 10.05 15.5 8C15.5 4.96 13.04 2.5 10 2.5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+          <path d="M8 17.5H12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+        <b>Analisis Logika</b><span>Kenali pola pikir, bias, dan logical fallacy.</span>
+      </div>
+      <div>
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 4.5C3 4.5 5 3.5 8 3.5C9.5 3.5 10.5 4 10.5 4V15.5C10.5 15.5 9.5 15 8 15C5 15 3 16 3 16V4.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+          <path d="M17 4.5C17 4.5 15 3.5 12 3.5C10.5 3.5 9.5 4 9.5 4V15.5C9.5 15.5 10.5 15 12 15C15 15 17 16 17 16V4.5Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+        <b>Belajar</b><span>Latihan literasi media dan berpikir kritis.</span>
+      </div>
     </section>
   </main>
 
   <footer>Content Sense — Jangan langsung percaya. Analisis dulu.</footer>
 
   <script src="js/main.js"></script>
-  <script src="js/analyze-video.js"></script>
-  <script src="js/analyze-photo.js"></script>
+  <script src="js/mode-toggle.js"></script>
   <script src="js/analyze-text.js"></script>
+  <script src="js/analyze-url.js"></script>
+  <script src="js/analyze-photo.js"></script>
+  <script src="js/analyze-video.js"></script>
 </body>
 </html>

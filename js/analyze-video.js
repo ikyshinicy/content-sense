@@ -1,20 +1,22 @@
 // Content Sense — analyze-video.js
-// PLACEHOLDER: belum tersambung ke AI. Ganti bagian yang ditandai TODO
-// saat backend/AI analisis video sudah siap.
+// SEGERA HADIR: mode Video belum aktif di MVP ini (input masih disabled
+// di index.html). Logic upload/drag-drop disiapkan di sini supaya
+// tinggal diaktifkan begitu backend/AI analisis video sudah siap.
 
 document.addEventListener('DOMContentLoaded', () => {
   const dropZone = document.getElementById('video-drop');
   const fileInput = document.getElementById('video-input');
-  const button = document.getElementById('video-analyze-btn');
-  const resultEl = document.getElementById('video-result');
+  const analyzeBtn = document.getElementById('analyze-btn');
 
   let selectedFile = null;
 
-  // Klik drop zone -> buka file picker
-  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('click', () => {
+    if (fileInput.disabled) return;
+    fileInput.click();
+  });
 
-  // Drag & drop
   dropZone.addEventListener('dragover', (e) => {
+    if (fileInput.disabled) return;
     e.preventDefault();
     dropZone.classList.add('dragover');
   });
@@ -22,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.classList.remove('dragover');
   });
   dropZone.addEventListener('drop', (e) => {
+    if (fileInput.disabled) return;
     e.preventDefault();
     dropZone.classList.remove('dragover');
     if (e.dataTransfer.files.length > 0) {
@@ -40,21 +43,22 @@ document.addEventListener('DOMContentLoaded', () => {
     dropZone.innerHTML = `<div><strong class="filename">${file.name}</strong>Klik untuk ganti video</div>`;
   }
 
-  button.addEventListener('click', () => {
+  analyzeBtn.addEventListener('click', () => {
+    if (analyzeBtn.dataset.mode !== 'video') return;
+
     if (!selectedFile) {
-      alert('Pilih video terlebih dahulu.');
+      alert('Mode analisis Video segera hadir.');
       return;
     }
 
-    // TODO: ganti simulasi ini dengan panggilan API analisis video sungguhan.
-    // Contoh nanti: upload `selectedFile` ke endpoint backend, lalu render
-    // hasil asli (klaim, framing, provokasi, dsb) ke `resultEl`.
-    window.ContentSense.simulateProcessing(button, 'Menganalisis...', () => {
+    // TODO: aktifkan mode ini (hapus atribut `disabled` di index.html),
+    // lalu ganti blok ini dengan: upload `selectedFile` ke endpoint
+    // backend, lalu render hasil asli (klaim, framing, provokasi, dsb).
+    window.ContentSense.simulateProcessing(analyzeBtn, 'Menganalisis...', () => {
       window.ContentSense.renderResult(
-        resultEl,
         'Hasil Analisis Video',
         `<p>File: <b>${selectedFile.name}</b></p>
-         <p>Narasi: netral · Framing: tidak terdeteksi kuat · Klaim: 2 klaim ditemukan (belum diverifikasi)</p>`
+         <p>Narasi: netral &middot; Framing: tidak terdeteksi kuat &middot; Klaim: 2 klaim ditemukan (belum diverifikasi)</p>`
       );
     });
   });
