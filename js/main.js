@@ -46,9 +46,6 @@ function renderAnalysisResult(data) {
       <b>${cat.title}</b>
       <span class="cat-badge cat-badge-${cat.badgeTone}">${cat.badge}</span>
       <p>${cat.desc}</p>
-      <a href="#" class="cat-detail" data-cat="${cat.key}">Lihat Detail
-        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 5.5H9M9 5.5L6 2.5M9 5.5L6 8.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </a>
     </div>
   `).join('');
 
