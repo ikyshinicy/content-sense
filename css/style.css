@@ -72,9 +72,10 @@ svg {
 .banner {
   position: relative;
   border-radius: 28px;
-  margin-bottom: 24px;
+  margin: 0 auto 24px;
   overflow: hidden;
   min-height: 260px;
+  max-width: 1400px;
   background: rgba(255, 255, 255, 0.04);
 }
 
