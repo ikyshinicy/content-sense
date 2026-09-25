@@ -210,7 +210,7 @@ svg {
 /* Tool: two-column layout */
 .tool {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
+  grid-template-columns: 35fr 65fr;
   gap: 20px;
   align-items: stretch;
 }
